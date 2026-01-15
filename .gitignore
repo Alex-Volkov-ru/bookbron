@@ -3,7 +3,6 @@ __pycache__/
 *$py.class
 *.so
 .Python
-# env/ - НЕ игнорируем, нужна для Dockerfile в CI/CD
 venv/
 ENV/
 .venv
