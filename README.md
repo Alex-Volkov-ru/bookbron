@@ -199,3 +199,47 @@ celery -A app.celery_app worker --loglevel=info
 ### Проблемы с миграциями
 - Убедитесь что БД запущена: `docker-compose ps db`
 - Проверьте логи: `docker-compose logs backend | grep alembic`
+
+## DevOps развертка
+
+Проект включает полную DevOps инфраструктуру для production развертки.
+
+### Структура
+
+```
+env/
+├── backend/
+│   ├── Dockerfile      # Production Dockerfile для backend
+│   └── config.yml      # Конфигурация retry для backend
+└── frontend/
+    ├── Dockerfile      # Production Dockerfile для frontend (multi-stage build)
+    ├── nginx.conf      # Production nginx конфигурация (с SSL)
+    └── local.conf      # Local nginx конфигурация (без SSL)
+```
+
+### Production развертка
+
+1. **Сборка образов:**
+   ```bash
+   docker build -f env/backend/Dockerfile -t yourusername/booking_backend:latest .
+   docker build -f env/frontend/Dockerfile -t yourusername/booking_frontend:latest .
+   ```
+
+2. **Настройка GitHub Secrets** (для CI/CD):
+   - `DOCKER_USERNAME` - логин Docker Hub
+   - `DOCKER_PASSWORD` - пароль/токен Docker Hub
+   - `SSH_HOST`, `SSH_PORT`, `SSH_USER`, `SSH_KEY` - данные для SSH доступа к серверу
+   - `PROJECT_DIR` - путь к проекту на сервере
+
+3. **Развертывание:**
+   ```bash
+   docker compose -f docker-compose.production.yml up -d
+   ```
+
+4. **Инициализация БД:**
+   ```bash
+   docker compose -f docker-compose.production.yml exec backend alembic upgrade head
+   docker compose -f docker-compose.production.yml exec backend python scripts/init_db.py
+   ```
+
+Подробная инструкция по развертке доступна в `.github/workflows/deploy.yml` и `docker-compose.production.yml`.
