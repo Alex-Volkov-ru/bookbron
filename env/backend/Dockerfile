@@ -28,6 +28,9 @@ COPY ./app /app/app
 COPY ./alembic.ini /app/alembic.ini
 COPY ./alembic /app/alembic
 COPY ./scripts /app/scripts
+COPY ./openapi.json /app/openapi.json
+COPY ./index_swagger.html /app/index_swagger.html
+COPY ./index_redoc.html /app/index_redoc.html
 
 # Создание директорий для логов и медиа
 RUN mkdir -p /app/logs /app/media
