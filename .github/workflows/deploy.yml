@@ -86,18 +86,20 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -p ${{ secrets.SSH_PORT }} \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "mkdir -p '${{ secrets.PROJECT_DIR }}/env/frontend'"
-          echo "📂 Убедились, что каталог на сервере существует" >> $GITHUB_STEP_SUMMARY
+            "mkdir -p '${{ secrets.PROJECT_DIR }}/env/frontend' '${{ secrets.PROJECT_DIR }}/env/nginx' '${{ secrets.PROJECT_DIR }}/scripts'"
+          echo "📂 Убедились, что каталоги на сервере существуют" >> $GITHUB_STEP_SUMMARY
 
       - name: 📤 Copy files & restart services
         run: |
           echo "📦 Копируем файлы на сервер"
           scp -i ~/.ssh/id_rsa -P ${{ secrets.SSH_PORT }} docker-compose.production.yml \
-              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.PROJECT_DIR }}/docker-compose.production.yml
+              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.PROJECT_DIR }}/
           scp -i ~/.ssh/id_rsa -P ${{ secrets.SSH_PORT }} env/frontend/nginx.conf \
-              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.PROJECT_DIR }}/env/frontend/nginx.conf
+              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.PROJECT_DIR }}/env/frontend/
           scp -i ~/.ssh/id_rsa -P ${{ secrets.SSH_PORT }} env/frontend/local.conf \
-              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.PROJECT_DIR }}/env/frontend/local.conf
+              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.PROJECT_DIR }}/env/frontend/
+          scp -i ~/.ssh/id_rsa -P ${{ secrets.SSH_PORT }} scripts/setup_server.sh \
+              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.PROJECT_DIR }}/scripts/ 2>/dev/null || true
 
           echo "🚀 Перезапускаем стек контейнеров"
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -p ${{ secrets.SSH_PORT }} \
