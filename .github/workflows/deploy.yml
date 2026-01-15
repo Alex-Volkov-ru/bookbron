@@ -101,9 +101,10 @@ jobs:
 
           echo "🚀 Перезапускаем стек контейнеров"
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -p ${{ secrets.SSH_PORT }} \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
           set -e
           cd ${{ secrets.PROJECT_DIR }}
+          export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
           docker compose -f docker-compose.production.yml pull
           docker compose -f docker-compose.production.yml down
           docker compose -f docker-compose.production.yml up -d
