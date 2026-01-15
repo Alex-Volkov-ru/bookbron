@@ -40,7 +40,9 @@ services:
       retries: 5
 
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: env/backend/Dockerfile
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - .:/app
@@ -71,7 +73,9 @@ services:
         condition: service_healthy
 
   celery_worker:
-    build: .
+    build:
+      context: .
+      dockerfile: env/backend/Dockerfile
     command: celery -A app.celery_app worker --loglevel=info
     volumes:
       - .:/app
@@ -92,7 +96,9 @@ services:
       - backend
 
   flower:
-    build: .
+    build:
+      context: .
+      dockerfile: env/backend/Dockerfile
     command: celery -A app.celery_app flower --port=5555
     ports:
       - "5555:5555"
@@ -107,8 +113,8 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: env/frontend/Dockerfile
     ports:
       - "3000:80"
     depends_on:
