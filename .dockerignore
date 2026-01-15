@@ -3,7 +3,7 @@ __pycache__
 *.pyo
 *.pyd
 .Python
-env/
+# env/ - НЕ исключаем, нужна для Dockerfile
 venv/
 .venv
 *.log
